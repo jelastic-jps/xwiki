@@ -1,0 +1,98 @@
+{
+	"jpsVersion": "0.2",
+	"jpsType": "install",
+	"application": {
+		"id": "xwiki",
+		"name": "XWiki",
+		"version": "7.2",
+		"logo": "https://raw.githubusercontent.com/JelasticJPS/XWiki/master/images/xwiki_logo.png",
+		"type": "java",
+		"homepage": "http://www.xwiki.org/",
+		"description": {
+			"en": "XWiki is a professional wiki that has powerful extensibility features such as scripting in pages, plugins and a highly modular architecture."
+		},
+		"success": {
+			"en": "Below you will find link to your wiki.<br><br> <table style='font-size:13px; border: none;'><tr><td>Application URL:</td><td style='padding-left: 10px;'><a href='${env.protocol}://${env.domain}/' target='_blank'>${env.protocol}://${env.domain}/</a></td></tr><tr><td>Username:</td><td style='padding-left: 10px;'>superadmin</td></tr><tr><td>Password:</td><td style='padding-left: 10px;'>${user.appPassword}</td></tr></table> </br></br> For more information on advanced XWiki configuration visit <a href='http://platform.xwiki.org/xwiki/bin/view/AdminGuide/Configuration' target='_blank'>Xwiki Platform Guide</a>"
+		},
+		"env": {
+			"topology": {
+				"ha": false,
+				"engine": "java7",
+				"ssl": false,
+				"nodes": [{
+						"extip": false,
+						"count": 1,
+						"cloudlets": 16,
+						"nodeType": "tomcat7"
+					}, {
+						"extip": false,
+						"count": 1,
+						"cloudlets": 16,
+						"nodeType": "mysql5"
+					}
+				]
+			},
+			"upload": [{
+					"nodeType": "tomcat7",
+					"sourcePath": "https://raw.githubusercontent.com/JelasticJPS/XWiki/master/libs/mysql-connector-java-5.1.30-bin.jar",
+					"destPath": "${SERVER_LIBS}/mysql-connector-java-5.1.30-bin.jar"
+				}
+			],
+			"deployments": [{
+					"archive": "https://media.githubusercontent.com/media/JelasticJPS/XWiki/master/dumps/xwiki-enterprise-web-7.2-milestone-1.war",
+					"name": "xwiki-enterprise-web-7.2.war",
+					"context": "ROOT"
+				}
+			],
+			"configs": [{
+					"nodeType": "mysql5",
+					"path": "${SYSTEM_ETC}/my.cnf",
+					"replacements": [{
+							"pattern": "max_allowed_packet.*",
+							"replacement": "max_allowed_packet = 150M"
+						}
+					],
+					"restart": true
+				}, {
+					"nodeType": "mysql5",
+					"database": {
+						"name": "xwiki",
+						"user": "xwiki"
+					}
+				}, {
+					"nodeType": "tomcat7",
+					"path": "${SERVER_WEBROOT}/ROOT/WEB-INF/hibernate.cfg.xml",
+					"replacements": [{
+							"pattern": "jdbc:hsqldb:file:${environment.permanentDirectory}/database/xwiki_db;shutdown=true",
+							"replacement": "jdbc:mysql://${nodes.mysql5.address}/xwiki"
+						}, {
+							"pattern": "\"connection.username\">sa",
+							"replacement": "\"connection.username\">${nodes.mysql5.database.user}"
+						}, {
+							"pattern": "org.hsqldb.jdbcDriver",
+							"replacement": "com.mysql.jdbc.Driver"
+						}, {
+							"pattern": "org.hibernate.dialect.HSQLDialect",
+							"replacement": "org.hibernate.dialect.MySQL5InnoDBDialect"
+						}, {
+							"pattern": "\"connection.password\">",
+							"replacement": "\"connection.password\">${nodes.mysql5.database.password}"
+						}, {
+							"pattern": "{DB_NAME}",
+							"replacement": "${nodes.mysql5.database.name}"
+						}
+					]
+				}, {
+					"nodeType": "tomcat7",
+					"restart": true,
+					"path": "${SERVER_WEBROOT}/ROOT/WEB-INF/xwiki.cfg",
+					"replacements": [{
+							"pattern": "# xwiki.superadminpassword=system",
+							"replacement": "xwiki.superadminpassword=${user.appPassword}"
+						}
+					]
+				}
+			]
+		}
+	}
+}
