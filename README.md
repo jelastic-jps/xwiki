@@ -1,7 +1,6 @@
 # Jelastic XWiki Add-on
 
 This repository provides [XWiki](http://www.xwiki.org/) add-on for Jelastic Platform.
-[![GET IT HOSTED](https://raw.githubusercontent.com/JelasticJPS/XWiki/master/images/getithosted.png)](http://go.jelastic.com/test?hoster-select=1&theme=modern&app=https://raw.githubusercontent.com/JelasticJPS/XWiki/master/XWiki-7.2.json)
 
 **XWiki** is a professional wiki.
 
