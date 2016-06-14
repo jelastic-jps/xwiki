@@ -5,7 +5,7 @@
 		"id": "xwiki",
 		"name": "XWiki",
 		"version": "7.2",
-		"logo": "https://raw.githubusercontent.com/JelasticJPS/XWiki/master/images/xwiki_logo.png",
+		"logo": "https://raw.githubusercontent.com/jelastic-jps/XWiki/master/images/xwiki_logo.png",
 		"type": "java",
 		"homepage": "http://www.xwiki.org/",
 		"description": {
@@ -34,12 +34,12 @@
 			},
 			"upload": [{
 					"nodeType": "tomcat7",
-					"sourcePath": "https://raw.githubusercontent.com/JelasticJPS/XWiki/master/libs/mysql-connector-java-5.1.30-bin.jar",
+					"sourcePath": "https://raw.githubusercontent.com/jelastic-jps/XWiki/master/libs/mysql-connector-java-5.1.30-bin.jar",
 					"destPath": "${SERVER_LIBS}/mysql-connector-java-5.1.30-bin.jar"
 				}
 			],
 			"deployments": [{
-					"archive": "https://media.githubusercontent.com/media/JelasticJPS/XWiki/master/dumps/xwiki-enterprise-web-7.2-milestone-1.war",
+					"archive": "https://media.githubusercontent.com/media/jelastic-jps/XWiki/master/dumps/xwiki-enterprise-web-7.2-milestone-1.war",
 					"name": "xwiki-enterprise-web-7.2.war",
 					"context": "ROOT"
 				}
