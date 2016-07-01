@@ -1,7 +1,7 @@
 [![XWiki](../../raw/master/images/xwiki_logo.png)](../../../xwiki)
 ## XWiki
 
-The JPS package deploys Magento that initially contains 1 application server and 1 database container.
+The JPS package deploys XWiki that initially contains 1 application server and 1 database container.
 
 ### Highlights
 This package is designed to deploy XWiki environment which represents a professional wiki.<br />That has powerful extensibility features such as scripting in pages, plugins and a highly modular architecture.
