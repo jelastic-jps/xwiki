@@ -39,7 +39,7 @@
 				}
 			],
 			"deployments": [{
-					"archive": "https://media.githubusercontent.com/media/jelastic-jps/xwiki/master/dumps/xwiki-8.2.war",
+					"archive": "http://download.forge.ow2.org/xwiki/xwiki-enterprise-web-8.2.1.war",
 					"name": "xwiki-8.2.war",
 					"context": "ROOT"
 				}
