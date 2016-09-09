@@ -14,16 +14,16 @@ This package is designed to deploy XWiki environment which represents a professi
 
 Layer                |     Server    | Number of CTs <br/> by default | Cloudlets per CT <br/> (reserved/dynamic) | Options
 -------------------- | --------------| :----------------------------: | :---------------------------------------: | :-----:
-AS                   | Apache 2 (MOD_PHP) |       1                        |           1 / 16                          | -
+AS                   |   Tomcat 7    |       1                        |           1 / 16                          | -
 DB                   |    MySQL      |       1                        |           1 / 16                           | -
 
 * AS - Application server 
 * DB - Database 
 * CT - Container
 
-**XWiki Version**: Enterprise 7.2-milestone-1<br/>
+**XWiki Version**: Enterprise 8.2.1<br/>
 **Tomcat Version**: 7.0.67<br/>
-**Java Engine**: Java 7<br/>
+**Java Engine**: Java 8<br/>
 **MySQL Database**: 5.7.12
 
 ### Deployment

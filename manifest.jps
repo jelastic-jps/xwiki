@@ -4,7 +4,7 @@
 	"application": {
 		"id": "xwiki",
 		"name": "XWiki",
-		"version": "7.2",
+		"version": "8.2",
 		"logo": "https://raw.githubusercontent.com/jelastic-jps/xwiki/master/images/xwiki_logo.png",
 		"type": "java",
 		"homepage": "http://www.xwiki.org/",
@@ -17,7 +17,7 @@
 		"env": {
 			"topology": {
 				"ha": false,
-				"engine": "java7",
+				"engine": "java8",
 				"ssl": false,
 				"nodes": [{
 						"extip": false,
@@ -39,8 +39,8 @@
 				}
 			],
 			"deployments": [{
-					"archive": "https://media.githubusercontent.com/media/jelastic-jps/xwiki/master/dumps/xwiki-enterprise-web-7.2-milestone-1.war",
-					"name": "xwiki-enterprise-web-7.2.war",
+					"archive": "http://download.forge.ow2.org/xwiki/xwiki-enterprise-web-8.2.1.war",
+					"name": "xwiki-8.2.war",
 					"context": "ROOT"
 				}
 			],
