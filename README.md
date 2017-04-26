@@ -8,7 +8,7 @@ This package is designed to deploy XWiki environment which represents a professi
 
 ### Environment Topology
 
-![XWiki Topology](https://docs.google.com/drawings/d/1lO5ElE4GO9y8BHttAqCfPSVTtwxBPy89g3fi133jzCQ/pub?w=505&h=216)
+![xwiki-environment-topology](images/xwiki-environment-topology.png)
 
 ### Specifics
 
