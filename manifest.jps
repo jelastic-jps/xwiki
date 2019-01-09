@@ -5,6 +5,7 @@
     "id": "xwiki",
     "name": "XWiki",
     "version": "8.2",
+    "categories" : ["apps/content-management"],
     "logo": "https://raw.githubusercontent.com/jelastic-jps/xwiki/master/images/xwiki_logo.png",
     "homepage": "http://www.xwiki.org/",
     "description": "XWiki is a professional wiki that has powerful extensibility features such as scripting in pages, plugins and a highly modular architecture.",
