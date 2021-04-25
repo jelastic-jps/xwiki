@@ -15,8 +15,8 @@ env:
   topology:
     engine: java8
     nodes:
-    - cloudlets: 16
-      fixedCloudlets: 4
+    - cloudlets: 32
+      fixedCloudlets: 8
       nodeType: tomcat9
     - cloudlets: 8
       fixedCloudlets: 2
