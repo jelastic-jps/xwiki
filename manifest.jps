@@ -2,7 +2,7 @@ type: install
 id: xwiki
 name: XWiki
 logo: https://raw.githubusercontent.com/jelastic-jps/xwiki/master/images/xwiki_logo.png
-baseUrl: https://raw.githubusercontent.com/panslothda/xwiki/master
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/xwiki/master
 homepage: http://www.xwiki.org/
 description: XWiki is a professional wiki that has powerful extensibility features
     such as scripting in pages, plugins and a highly modular architecture.
