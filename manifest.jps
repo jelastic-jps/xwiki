@@ -2,28 +2,21 @@ type: install
 id: xwiki
 name: XWiki
 logo: https://raw.githubusercontent.com/jelastic-jps/xwiki/master/images/xwiki_logo.png
-
+baseUrl: https://raw.githubusercontent.com/panslothda/xwiki/master
 homepage: http://www.xwiki.org/
 description: XWiki is a professional wiki that has powerful extensibility features
     such as scripting in pages, plugins and a highly modular architecture.
-success: 'Below you will find link to your wiki.<br><br> <table style=''font-size:13px;
-    border: none;''><tr><td>Application URL:</td><td style=''padding-left: 10px;''><a
-    href=''${env.protocol}://${env.domain}/'' target=''_blank''>${env.protocol}://${env.domain}/</a></td></tr><tr><td>Username:</td><td
-    style=''padding-left: 10px;''>superadmin</td></tr><tr><td>Password:</td><td style=''padding-left:
-    10px;''>${user.appPassword}</td></tr></table> </br></br> For more information
-    on advanced XWiki configuration visit <a href=''http://platform.xwiki.org/xwiki/bin/view/AdminGuide/Configuration''
-    target=''_blank''>Xwiki Platform Guide</a>'
-
 
 categories:
   - apps/content-management
 
-  
 env:
   topology:
     engine: java8
+    ssl: true
     nodes:
-    - cloudlets: 8
+    - cloudlets: 16
+      fixedCloudlets: 4
       nodeType: tomcat7
     - cloudlets: 8
       nodeType: mysql
@@ -32,12 +25,14 @@ env:
 onInstall:
   - upload:
     - nodeType: tomcat7
-      sourcePath: https://download.jelastic.com/public.php?service=files&t=085a1caa360c1e38e22a8b714a87d73e&download
+      sourcePath: ${baseUrl}/libs/mysql-connector-java-5.1.30-bin.jar
       destPath: "${SERVER_LIBS}/mysql-connector-java-5.1.30-bin.jar"
+
   - deploy:
       archive: http://download.forge.ow2.org/xwiki/xwiki-enterprise-web-8.2.1.war
       name: xwiki-enterprise-web-8.2.1.war
       context: ROOT
+
   - replaceInFile:
     - nodeType: mysql
       path: "/etc/my.cnf"
@@ -48,6 +43,7 @@ onInstall:
         replacement: |-
           \[mysqld\]
           character-set-server=utf8
+
     - nodeType: tomcat7
       path: "${SERVER_WEBROOT}/ROOT/WEB-INF/hibernate.cfg.xml"
       replacements:
@@ -63,11 +59,13 @@ onInstall:
         replacement: '"connection.password">${user.appPassword}'
       - pattern: "{DB_NAME}"
         replacement: xwiki
+
     - nodeType: tomcat7
       path: "${SERVER_WEBROOT}/ROOT/WEB-INF/xwiki.cfg"
       replacements:
       - pattern: "# xwiki.superadminpassword=system"
         replacement: xwiki.superadminpassword=${user.appPassword}
+
   - prepareSqlDatabase:
       nodeType: mysql
       loginCredentials:
@@ -77,11 +75,18 @@ onInstall:
       newDatabaseUser:
         name: xwiki
         password: "${user.appPassword}"
+
   - executeShellCommands:
       nodeType: mysql
       commands: mysql -u root -p${nodes.sqldb.password} -e "grant all privileges on
         *.* to 'xwiki'@'%'"
+
   - restartNodes:
       nodeGroup: sqldb
+
   - restartNodes:
       nodeGroup: cp
+
+success:
+  email: /text/success-text.md
+  text: /text/success-text.md
