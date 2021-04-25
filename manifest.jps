@@ -11,81 +11,80 @@ categories:
   - apps/content-management
 
 env:
+  sslstate: true
   topology:
     engine: java8
-    ssl: true
     nodes:
     - cloudlets: 16
       fixedCloudlets: 4
-      nodeType: tomcat7
+      nodeType: tomcat9
     - cloudlets: 8
-      nodeType: mysql
-      tag: 5.6.40
+      fixedCloudlets: 2
+      nodeType: mariadb10
 
 onInstall:
-  - upload:
-    - nodeType: tomcat7
-      sourcePath: ${baseUrl}/libs/mysql-connector-java-5.1.30-bin.jar
-      destPath: "${SERVER_LIBS}/mysql-connector-java-5.1.30-bin.jar"
+  - upload
+  - deploy
+  - set-directory
+  - xwiki-sql-settings
+  - set-SQL-settings
+  - restart
 
-  - deploy:
-      archive: http://download.forge.ow2.org/xwiki/xwiki-enterprise-web-8.2.1.war
-      name: xwiki-enterprise-web-8.2.1.war
+actions:
+  upload:
+    upload:
+      - nodeType: tomcat9
+        sourcePath: ${baseUrl}/libs/mariadb-java-client-2.7.2.jar
+        destPath: "/opt/tomcat/lib/mariadb-java-client-2.7.2.jar"
+
+  deploy:
+    deploy:
+      archive: https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-war/13.2/xwiki-platform-distribution-war-13.2.war
+      name: xwiki-platform-distribution-war-13.2.war
       context: ROOT
 
-  - replaceInFile:
-    - nodeType: mysql
-      path: "/etc/my.cnf"
+  set-directory:
+    replaceInFile:
+      nodeType: tomcat9
+      path: /opt/tomcat/webapps//ROOT/WEB-INF/xwiki.properties
       replacements:
-      - pattern: max_allowed_packet.*
-        replacement: max_allowed_packet = 150M
-      - pattern: "\\[mysqld\\]"
-        replacement: |-
-          \[mysqld\]
-          character-set-server=utf8
+        - pattern: '# environment.'
+          replacement: 'environment.'
+    cmd [tomcat9]: echo /var/lib/xwiki/data/ >> /etc/jelastic/redeploy.conf
 
-    - nodeType: tomcat7
-      path: "${SERVER_WEBROOT}/ROOT/WEB-INF/hibernate.cfg.xml"
+  xwiki-sql-settings:
+    replaceInFile:
+      nodeType: tomcat9
+      path: /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
       replacements:
-      - pattern: jdbc:hsqldb:file:${environment.permanentDirectory}/database/xwiki_db;shutdown=true
-        replacement: jdbc:mysql://${nodes.sqldb.address}/xwiki
-      - pattern: '"connection.username">sa'
-        replacement: '"connection.username">xwiki'
-      - pattern: org.hsqldb.jdbcDriver
-        replacement: com.mysql.jdbc.Driver
-      - pattern: org.hibernate.dialect.HSQLDialect
-        replacement: org.hibernate.dialect.MySQL5InnoDBDialect
-      - pattern: '"connection.password">'
-        replacement: '"connection.password">${user.appPassword}'
-      - pattern: "{DB_NAME}"
-        replacement: xwiki
+        - pattern: 'connection.password">xwiki'
+          replacement: 'connection.password">${user.appPassword}'
+        - pattern: mariadb://localhost/xwiki
+          replacement: mariadb://${nodes.sqldb.address}/xwiki
+    cmd [tomcat9]: |-
+      sed -i '107i <!--' /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
+      sed -i '122i -->' /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
+      sed -i '156i -->' /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
+      sed -i '173d ' /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
+    user: root 
 
-    - nodeType: tomcat7
-      path: "${SERVER_WEBROOT}/ROOT/WEB-INF/xwiki.cfg"
-      replacements:
-      - pattern: "# xwiki.superadminpassword=system"
-        replacement: xwiki.superadminpassword=${user.appPassword}
+  set-SQL-settings:
+    prepareSqlDatabase:
+      - nodeType: mariadb10
+        loginCredentials:
+          user: root
+          password: "${nodes.sqldb.password}"
+        newDatabaseName: xwiki
+        newDatabaseUser:
+          name: xwiki
+          password: "${user.appPassword}"
+    cmd [mariadb10]: mysql -u root -p${nodes.sqldb.password} -e "grant all privileges on *.* to 'xwiki'@'%'"
 
-  - prepareSqlDatabase:
-      nodeType: mysql
-      loginCredentials:
-        user: root
-        password: "${nodes.sqldb.password}"
-      newDatabaseName: xwiki
-      newDatabaseUser:
-        name: xwiki
-        password: "${user.appPassword}"
-
-  - executeShellCommands:
-      nodeType: mysql
-      commands: mysql -u root -p${nodes.sqldb.password} -e "grant all privileges on
-        *.* to 'xwiki'@'%'"
-
-  - restartNodes:
-      nodeGroup: sqldb
-
-  - restartNodes:
-      nodeGroup: cp
+  restart:
+    - restartNodes:
+        nodeGroup: sqldb
+    - restartNodes:
+        nodeGroup: cp
 
 success:
   email: /text/success-text.md
