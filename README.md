@@ -11,7 +11,7 @@ This package is designed to deploy XWiki environment which represents a professi
 Layer                |     Server    | Number of CTs <br/> by default | Cloudlets per CT <br/> (reserved/dynamic) | Options
 -------------------- | --------------| :----------------------------: | :---------------------------------------: | :-----:
 AS                   |   Tomcat 9    |       1                        |           4 / 16                          | -
-DB                   |  MariaDB 10   |       1                        |           1 / 8                           | -
+DB                   |  MariaDB 10   |       1                        |           2 / 8                           | -
 
 * AS - Application server 
 * DB - Database 
