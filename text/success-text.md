@@ -4,4 +4,4 @@ XWiki was succesfully installed and is ready for initialization!
 **Username**: superadmin  
 **Password**: ${user.appPassword}
 
-[XWiki Platform Guide/](https://platform.xwiki.org/xwiki/bin/view/AdminGuide/Configuration)
+[XWiki Platform Guide](https://platform.xwiki.org/xwiki/bin/view/AdminGuide/Configuration)
