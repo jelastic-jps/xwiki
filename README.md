@@ -6,25 +6,21 @@ The JPS package deploys XWiki that initially contains 1 application server and 1
 ### Highlights
 This package is designed to deploy XWiki environment which represents a professional wiki.<br />That has powerful extensibility features such as scripting in pages, plugins and a highly modular architecture.
 
-### Environment Topology
-
-![xwiki-environment-topology](images/xwiki-environment-topology.png)
-
 ### Specifics
 
 Layer                |     Server    | Number of CTs <br/> by default | Cloudlets per CT <br/> (reserved/dynamic) | Options
 -------------------- | --------------| :----------------------------: | :---------------------------------------: | :-----:
-AS                   |   Tomcat 7    |       1                        |           1 / 16                          | -
-DB                   |    MySQL      |       1                        |           1 / 16                           | -
+AS                   |   Tomcat 9    |       1                        |           8 / 32                          | -
+DB                   |  MariaDB 10   |       1                        |           2 / 8                           | -
 
 * AS - Application server 
 * DB - Database 
 * CT - Container
 
-**XWiki Version**: Enterprise 8.2.1<br/>
-**Tomcat Version**: 7.0.67<br/>
-**Java Engine**: Java 8<br/>
-**MySQL Database**: 5.7.12
+**XWiki Version**: Stable 13.2 <br/>
+**Tomcat Version**: 9.x <br/>
+**Java Engine**: Java 8 <br/>
+**MariaDB Database**: 10.x
 
 ### Deployment
 

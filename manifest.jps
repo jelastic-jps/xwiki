@@ -1,136 +1,91 @@
-{
-  "jpsVersion": "0.2",
-  "jpsType": "install",
-  "application": {
-    "id": "xwiki",
-    "name": "XWiki",
-    "version": "8.2",
-    "categories" : ["apps/content-management"],
-    "logo": "https://raw.githubusercontent.com/jelastic-jps/xwiki/master/images/xwiki_logo.png",
-    "homepage": "http://www.xwiki.org/",
-    "description": "XWiki is a professional wiki that has powerful extensibility features such as scripting in pages, plugins and a highly modular architecture.",
-    "success": "Below you will find link to your wiki.<br><br> <table style='font-size:13px; border: none;'><tr><td>Application URL:</td><td style='padding-left: 10px;'><a href='${env.protocol}://${env.domain}/' target='_blank'>${env.protocol}://${env.domain}/</a></td></tr><tr><td>Username:</td><td style='padding-left: 10px;'>superadmin</td></tr><tr><td>Password:</td><td style='padding-left: 10px;'>${user.appPassword}</td></tr></table> </br></br> For more information on advanced XWiki configuration visit <a href='http://platform.xwiki.org/xwiki/bin/view/AdminGuide/Configuration' target='_blank'>Xwiki Platform Guide</a>",
-    "env": {
-      "topology": {
-        "engine": "java8",
-        "nodes": [
-          {
-            "cloudlets": 8,
-            "nodeType": "tomcat7"
-          },
-          {
-            "cloudlets": 8,
-            "nodeType": "mysql",
-            "tag": "5.6.40"
-          }
-        ]
-      }
-    },
-    "onInstall": [
-      {
-        "upload": [
-          {
-            "nodeType": "tomcat7",
-            "sourcePath": "https://download.jelastic.com/public.php?service=files&t=085a1caa360c1e38e22a8b714a87d73e&download",
-            "destPath": "${SERVER_LIBS}/mysql-connector-java-5.1.30-bin.jar"
-          }
-        ]
-      },
-      {
-        "deploy": {
-          "archive": "http://download.forge.ow2.org/xwiki/xwiki-enterprise-web-8.2.1.war",
-          "name": "xwiki-enterprise-web-8.2.1.war",
-          "context": "ROOT"
-        }
-      },
-      {
-        "replaceInFile": [
-          {
-            "nodeType": "mysql",
-            "path": "/etc/my.cnf",
-            "replacements": [
-              {
-                "pattern": "max_allowed_packet.*",
-                "replacement": "max_allowed_packet = 150M"
-              },
-              {
-                "pattern": "\\[mysqld\\]",
-                "replacement": "\\[mysqld\\]\ncharacter-set-server=utf8"
-              }
-            ]
-          },
-          {
-            "nodeType": "tomcat7",
-            "path": "${SERVER_WEBROOT}/ROOT/WEB-INF/hibernate.cfg.xml",
-            "replacements": [
-              {
-                "pattern": "jdbc:hsqldb:file:${environment.permanentDirectory}/database/xwiki_db;shutdown=true",
-                "replacement": "jdbc:mysql://${nodes.sqldb.address}/xwiki"
-              },
-              {
-                "pattern": "\"connection.username\">sa",
-                "replacement": "\"connection.username\">xwiki"
-              },
-              {
-                "pattern": "org.hsqldb.jdbcDriver",
-                "replacement": "com.mysql.jdbc.Driver"
-              },
-              {
-                "pattern": "org.hibernate.dialect.HSQLDialect",
-                "replacement": "org.hibernate.dialect.MySQL5InnoDBDialect"
-              },
-              {
-                "pattern": "\"connection.password\">",
-                "replacement": "\"connection.password\">${user.appPassword}"
-              },
-              {
-                "pattern": "{DB_NAME}",
-                "replacement": "xwiki"
-              }
-            ]
-          },
-          {
-            "nodeType": "tomcat7",
-            "path": "${SERVER_WEBROOT}/ROOT/WEB-INF/xwiki.cfg",
-            "replacements": [
-              {
-                "pattern": "# xwiki.superadminpassword=system",
-                "replacement": "xwiki.superadminpassword=${user.appPassword}"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "prepareSqlDatabase": {
-          "nodeType": "mysql",
-          "loginCredentials": {
-            "user": "root",
-            "password": "${nodes.sqldb.password}"
-          },
-          "newDatabaseName": "xwiki",
-          "newDatabaseUser": {
-            "name": "xwiki",
-            "password": "${user.appPassword}"
-          }
-        }
-      },
-      {
-        "executeShellCommands": {
-          "nodeType": "mysql",
-          "commands": "mysql -u root -p${nodes.sqldb.password} -e \"grant all privileges on *.* to 'xwiki'@'%'\""
-        }
-      },
-      {
-        "restartNodes": {
-          "nodeGroup": "sqldb"
-        }
-      },
-      {
-        "restartNodes": {
-          "nodeGroup": "cp"
-        }
-      }
-    ]
-  }
-}
+type: install
+id: xwiki
+name: XWiki
+logo: https://raw.githubusercontent.com/jelastic-jps/xwiki/master/images/xwiki_logo.png
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/xwiki/master
+homepage: http://www.xwiki.org/
+description: XWiki is a professional wiki that has powerful extensibility features
+    such as scripting in pages, plugins and a highly modular architecture.
+
+categories:
+  - apps/content-management
+
+env:
+  sslstate: true
+  topology:
+    engine: java8
+    nodes:
+    - cloudlets: 32
+      fixedCloudlets: 8
+      nodeType: tomcat9
+    - cloudlets: 8
+      fixedCloudlets: 2
+      nodeType: mariadb10
+
+onInstall:
+  - upload
+  - deploy
+  - set-directory
+  - xwiki-sql-settings
+  - set-SQL-settings
+  - restart
+
+actions:
+  upload:
+    upload:
+      - nodeType: tomcat9
+        sourcePath: ${baseUrl}/libs/mariadb-java-client-2.7.2.jar
+        destPath: "/opt/tomcat/lib/mariadb-java-client-2.7.2.jar"
+
+  deploy:
+    deploy:
+      archive: https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-war/13.2/xwiki-platform-distribution-war-13.2.war
+      name: xwiki-platform-distribution-war-13.2.war
+      context: ROOT
+
+  set-directory:
+    replaceInFile:
+      nodeType: tomcat9
+      path: /opt/tomcat/webapps//ROOT/WEB-INF/xwiki.properties
+      replacements:
+        - pattern: '# environment.'
+          replacement: 'environment.'
+    cmd [tomcat9]: echo /var/lib/xwiki/data/ >> /etc/jelastic/redeploy.conf
+
+  xwiki-sql-settings:
+    replaceInFile:
+      nodeType: tomcat9
+      path: /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
+      replacements:
+        - pattern: 'connection.password">xwiki'
+          replacement: 'connection.password">${user.appPassword}'
+        - pattern: mariadb://localhost/xwiki
+          replacement: mariadb://${nodes.sqldb.address}/xwiki
+    cmd [tomcat9]: |-
+      sed -i '107i <!--' /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
+      sed -i '122i -->' /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
+      sed -i '156i -->' /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
+      sed -i '173d ' /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
+    user: root 
+
+  set-SQL-settings:
+    prepareSqlDatabase:
+      - nodeType: mariadb10
+        loginCredentials:
+          user: root
+          password: "${nodes.sqldb.password}"
+        newDatabaseName: xwiki
+        newDatabaseUser:
+          name: xwiki
+          password: "${user.appPassword}"
+    cmd [mariadb10]: mysql -u root -p${nodes.sqldb.password} -e "grant all privileges on *.* to 'xwiki'@'%'"
+
+  restart:
+    - restartNodes:
+        nodeGroup: sqldb
+    - restartNodes:
+        nodeGroup: cp
+
+success:
+  email: /text/success-text.md
+  text: /text/success-text.md
