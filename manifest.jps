@@ -1,6 +1,7 @@
 type: install
 id: xwiki
 name: XWiki
+version: 1.7
 logo: https://raw.githubusercontent.com/jelastic-jps/xwiki/master/images/xwiki_logo.png
 baseUrl: https://raw.githubusercontent.com/jelastic-jps/xwiki/master
 homepage: http://www.xwiki.org/
