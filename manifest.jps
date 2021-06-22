@@ -14,7 +14,7 @@ categories:
 env:
   sslstate: true
   topology:
-    engine: java8
+    engine: openjdk8
     nodes:
     - cloudlets: 32
       fixedCloudlets: 8
