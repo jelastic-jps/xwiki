@@ -14,7 +14,7 @@ categories:
 env:
   sslstate: true
   topology:
-    engine: openjdk8
+    engine: openjdk11
     nodes:
     - cloudlets: 32
       fixedCloudlets: 8
@@ -40,8 +40,8 @@ actions:
 
   deploy:
     deploy:
-      archive: https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-war/13.2/xwiki-platform-distribution-war-13.2.war
-      name: xwiki-platform-distribution-war-13.2.war
+      archive: https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-war/16.9.0/xwiki-platform-distribution-war-16.9.0.war
+      name: xwiki-platform-distribution-war-16.9.0.war
       context: ROOT
 
   set-directory:
