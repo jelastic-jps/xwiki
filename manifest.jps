@@ -14,7 +14,7 @@ categories:
 env:
   sslstate: true
   topology:
-    engine: openjdk11
+    engine: openjdk17
     nodes:
     - cloudlets: 32
       fixedCloudlets: 8
@@ -27,7 +27,6 @@ onInstall:
   - upload
   - deploy
   - set-directory
-  - xwiki-sql-settings
   - set-SQL-settings
   - restart
 
