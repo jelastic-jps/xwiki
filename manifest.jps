@@ -3,13 +3,17 @@ id: xwiki
 name: XWiki
 version: 1.7
 logo: https://raw.githubusercontent.com/jelastic-jps/xwiki/master/images/xwiki_logo.png
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/xwiki/master
 homepage: http://www.xwiki.org/
 description: XWiki is a professional wiki that has powerful extensibility features
     such as scripting in pages, plugins and a highly modular architecture.
 
 categories:
   - apps/content-management
+
+baseUrl: https://raw.githubusercontent.com/sych74/xwiki/master
+
+mixins:
+- configs/vers.yaml
 
 env:
   sslstate: true
@@ -23,11 +27,15 @@ env:
       fixedCloudlets: 2
       nodeType: mariadb10
 
+globals:
+  hibernate_cfg: /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
+  
 onInstall:
   - upload
   - deploy
   - set-directory
-  - set-SQL-settings
+  - set-sql-settings
+  - xwiki-sql-settings
   - restart
 
 actions:
@@ -39,8 +47,8 @@ actions:
 
   deploy:
     deploy:
-      archive: https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-war/16.9.0/xwiki-platform-distribution-war-16.9.0.war
-      name: xwiki-platform-distribution-war-16.9.0.war
+      archive: https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-war/16.9.0/xwiki-platform-distribution-war-${globals.version_xwiki}.war
+      name: xwiki-platform-distribution-war-${globals.version_xwiki}.war
       context: ROOT
 
   set-directory:
@@ -53,33 +61,19 @@ actions:
     cmd [tomcat9]: echo /var/lib/xwiki/data/ >> /etc/jelastic/redeploy.conf
 
   xwiki-sql-settings:
-    replaceInFile:
-      nodeType: tomcat9
-      path: /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
-      replacements:
-        - pattern: 'connection.password">xwiki'
-          replacement: 'connection.password">${user.appPassword}'
-        - pattern: mariadb://localhost/xwiki
-          replacement: mariadb://${nodes.sqldb.address}/xwiki
     cmd [tomcat9]: |-
-      sed -i '107i <!--' /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
-      sed -i '122i -->' /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
-      sed -i '156i -->' /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
-      sed -i '173d ' /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
-    user: root 
+      sed -i 's/<property name="hibernate.connection.password">xwiki<\/property>/<property name="hibernate.connection.password">${user.appPassword}<\/property>/' ${globals.hibernate_cfg}
+      sed -i 's/mariadb:\/\/localhost\/xwiki/mariadb:\/\/${nodes.sqldb.address}\/xwiki/' ${globals.hibernate_cfg}
+      sed -i '/<!-- Configuration for the default database/,/<mapping resource="mailsender.hbm.xml"/{s/^/<!-- /;s/$/ -->/}' ${globals.hibernate_cfg}
+      sed -i '/<!-- MariaDB configuration/,/-->/{s/^[[:space:]]*<!-- //;s/-->[[:space:]]*$//}' ${globals.hibernate_cfg}
+      sed -i '/MariaDB configuration/,/<[[:space:]]*property/{/^[[:space:]]*<property/!s/^/    <!-- /; /^[[:space:]]*<property/!s/$/ -->/}' ${globals.hibernate_cfg}
 
-  set-SQL-settings:
-    prepareSqlDatabase:
-      - nodeType: mariadb10
-        loginCredentials:
-          user: root
-          password: "${nodes.sqldb.password}"
-        newDatabaseName: xwiki
-        newDatabaseUser:
-          name: xwiki
-          password: "${user.appPassword}"
-    cmd [mariadb10]: mysql -u root -p${nodes.sqldb.password} -e "grant all privileges on *.* to 'xwiki'@'%'"
-
+  set-sql-settings:
+    cmd[mariadb10]: |-
+      MYSQL_PWD=${nodes.sqldb.password} mysql -uroot -e "CREATE DATABASE xwiki;"
+      MYSQL_PWD=${nodes.sqldb.password} mysql -uroot -e "CREATE USER 'xwiki'@'%' IDENTIFIED BY '${user.appPassword}';"
+      MYSQL_PWD=${nodes.sqldb.password} mysql -uroot -e "GRANT ALL PRIVILEGES ON xwiki.* TO 'xwiki'@'%' WITH GRANT OPTION;"
+  
   restart:
     - restartNodes:
         nodeGroup: sqldb
