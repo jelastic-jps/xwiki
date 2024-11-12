@@ -1,2 +1,3 @@
 globals:
   version_xwiki: 16.9.0
+  version_connector_java: 3.5.0
