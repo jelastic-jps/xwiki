@@ -31,7 +31,6 @@ globals:
   hibernate_cfg: /opt/tomcat/webapps/ROOT/WEB-INF/hibernate.cfg.xml
   
 onInstall:
-  - upload
   - deploy
   - set-directory
   - set-sql-settings
@@ -39,15 +38,10 @@ onInstall:
   - restart
 
 actions:
-  upload:
-    upload:
-      - nodeType: tomcat9
-        sourcePath: https://dlm.mariadb.com/Connectors/java/connector-java-3.5.0/mariadb-java-client-3.5.0.jar
-        destPath: "/opt/tomcat/lib/mariadb-java-client-3.5.0.jar"
 
   deploy:
     deploy:
-      archive: https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-war/16.9.0/xwiki-platform-distribution-war-${globals.version_xwiki}.war
+      archive: https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-war/${globals.version_xwiki}/xwiki-platform-distribution-war-${globals.version_xwiki}.war
       name: xwiki-platform-distribution-war-${globals.version_xwiki}.war
       context: ROOT
 
@@ -62,6 +56,7 @@ actions:
 
   xwiki-sql-settings:
     cmd [tomcat9]: |-
+      curl -fsSL "https://dlm.mariadb.com/Connectors/java/connector-java-${globals.version_connector_java}/mariadb-java-client-${globals.version_connector_java}.jar" -o /opt/tomcat/lib/mariadb-java-client-${globals.version_connector_java}.jar
       sed -i 's/<property name="hibernate.connection.password">xwiki<\/property>/<property name="hibernate.connection.password">${user.appPassword}<\/property>/' ${globals.hibernate_cfg}
       sed -i 's/mariadb:\/\/localhost\/xwiki/mariadb:\/\/${nodes.sqldb.address}\/xwiki/' ${globals.hibernate_cfg}
       sed -i '/Configuration for the default database./,/-->/{/<!--/s/<!--//; /-->/{s/-->//}}' ${globals.hibernate_cfg}
