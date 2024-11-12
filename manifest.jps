@@ -42,8 +42,8 @@ actions:
   upload:
     upload:
       - nodeType: tomcat9
-        sourcePath: ${baseUrl}/libs/mariadb-java-client-2.7.2.jar
-        destPath: "/opt/tomcat/lib/mariadb-java-client-2.7.2.jar"
+        sourcePath: https://dlm.mariadb.com/Connectors/java/connector-java-3.5.0/mariadb-java-client-3.5.0.jar
+        destPath: "/opt/tomcat/lib/mariadb-java-client-3.5.0.jar"
 
   deploy:
     deploy:
@@ -64,7 +64,8 @@ actions:
     cmd [tomcat9]: |-
       sed -i 's/<property name="hibernate.connection.password">xwiki<\/property>/<property name="hibernate.connection.password">${user.appPassword}<\/property>/' ${globals.hibernate_cfg}
       sed -i 's/mariadb:\/\/localhost\/xwiki/mariadb:\/\/${nodes.sqldb.address}\/xwiki/' ${globals.hibernate_cfg}
-      sed -i '/<!-- Configuration for the default database/,/<mapping resource="mailsender.hbm.xml"/{s/^/<!-- /;s/$/ -->/}' ${globals.hibernate_cfg}
+      sed -i '/Configuration for the default database./,/-->/{/<!--/s/<!--//; /-->/{s/-->//}}' ${globals.hibernate_cfg}
+      sed -i '/Configuration for the default database/,/<mapping resource="mailsender.hbm.xml"/{s/^/<!-- /;s/$/ -->/}' ${globals.hibernate_cfg}
       sed -i '/<!-- MariaDB configuration/,/-->/{s/^[[:space:]]*<!-- //;s/-->[[:space:]]*$//}' ${globals.hibernate_cfg}
       sed -i '/MariaDB configuration/,/<[[:space:]]*property/{/^[[:space:]]*<property/!s/^/    <!-- /; /^[[:space:]]*<property/!s/$/ -->/}' ${globals.hibernate_cfg}
 
