@@ -1,33 +1,34 @@
-[![XWiki](../../raw/master/images/xwiki_logo.png)](../../../xwiki)
-## XWiki
+<p align="center"> 
+<img src="images/xwiki_logo.png" alt="XWiki">
+</p>
 
-The JPS package deploys XWiki that initially contains 1 application server and 1 database container.
+# XWiki
 
-### Highlights
-This package is designed to deploy XWiki environment which represents a professional wiki.<br />That has powerful extensibility features such as scripting in pages, plugins and a highly modular architecture.
+The package deploys the [XWiki](https://www.xwiki.org/) solution - an open-source, light and powerful wiki platform that is designed to help you create and manage content collaboratively. Due to highly modular architecture, XWiki allows you to deploy a professional wiki with extensibility features such as scripting in pages and plugins.
 
-### Specifics
 
-Layer                |     Server    | Number of CTs <br/> by default | Cloudlets per CT <br/> (reserved/dynamic) | Options
--------------------- | --------------| :----------------------------: | :---------------------------------------: | :-----:
-AS                   |   Tomcat 9    |       1                        |           8 / 32                          | -
-DB                   |  MariaDB 10   |       1                        |           2 / 8                           | -
+## Environment Topology
 
-* AS - Application server 
-* DB - Database 
-* CT - Container
+This package creates a dedicated XWiki environment that contains one application server and one database container. It automatically deploys and sets the XWiki application. The automatic vertical scaling is enabled out of the box, and [horizontal scaling](https://www.virtuozzo.com/application-platform-docs/automatic-horizontal-scaling/) can be configured (if needed). The default software stacks utilized in the package are the following:
 
-**XWiki Version**: Stable 13.2 <br/>
-**Tomcat Version**: 9.x <br/>
-**Java Engine**: Java 8 <br/>
-**MariaDB Database**: 10.x
+- Tomcat 9 application server (Java 17)
+- MariaDB 10 database
+- XWiki 16.9.0
 
-### Deployment
 
-In order to get this solution instantly deployed, click the "Get It Hosted Now" button, specify your email address within the widget, choose one of the [Jelastic Public Cloud providers](https://jelastic.cloud) and press Install.
+## Deployment to Cloud
 
-[![GET IT HOSTED](https://raw.githubusercontent.com/jelastic-jps/jpswiki/master/images/getithosted.png)](https://jelastic.com/install-application/?manifest=https%3A%2F%2Fgithub.com%2Fjelastic-jps%2Fxwiki%2Fraw%2Fmaster%2Fmanifest.jps)
+To get your XWiki solution, click the "**Deploy to Cloud**" button below, specify your email address within the widget, choose one of the [Virtuozzo Public Cloud Providers](https://www.virtuozzo.com/application-platform-partners/), and confirm by clicking **Install**.
 
-To deploy this package to Jelastic Private Cloud, import [this JPS manifest](../../raw/master/manifest.jps) within your dashboard ([detailed instruction](https://docs.jelastic.com/environment-export-import#import)).
+[![Deploy to Cloud](https://raw.githubusercontent.com/jelastic-jps/common/main/images/deploy-to-cloud.png)](https://www.virtuozzo.com/install/?manifest=https://raw.githubusercontent.com/jelastic-jps/xwiki/refs/heads/master/manifest.jps)
 
-More information about Jelastic JPS package and about installation widget for your website can be found in the [Jelastic JPS Application Package](https://github.com/jelastic-jps/jpswiki/wiki/Jelastic-JPS-Application-Package) reference.
+> If you already have a Virtuozzo Application Platform (VAP) account, you can deploy this solution from the [Marketplace](https://www.virtuozzo.com/application-platform-docs/marketplace/) or [import](https://www.virtuozzo.com/application-platform-docs/environment-import/) a manifest file from this repository.
+
+
+## Installation Process
+
+In the opened installation window at the VAP dashboard, provide a preferred environment and display names, choose a region (if available), and confirm the installation.
+
+![XWiki deployment wizard](images/xwiki-deployment-wizard.png)
+
+Your XWiki application will be automatically installed in a few minutes.
