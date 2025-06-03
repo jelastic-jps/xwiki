@@ -2,14 +2,14 @@ type: install
 id: xwiki
 name: XWiki
 version: 1.7
-logo: https://raw.githubusercontent.com/jelastic-jps/xwiki/master/images/xwiki_logo.png
+logo: images/xwiki_logo.png
 homepage: https://www.xwiki.org/
 description: XWiki is an open-source, light and powerful wiki platform that is designed to help you create and manage content collaboratively. Due to highly modular architecture, XWiki allows you to deploy a professional wiki with extensibility features such as scripting in pages and plugins.
 
 categories:
   - apps/content-management
 
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/xwiki/master
+baseUrl: https://cdn.jsdelivr.net/gh/jelastic-jps/xwiki@master
 
 mixins:
 - configs/vers.yaml
